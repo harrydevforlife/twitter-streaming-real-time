@@ -1,0 +1,14 @@
+tweepy
+dash
+datetime
+nltk
+pandas
+plotly
+flask
+firebase_admin
+textblob
+numpy
+# dash==0.17.7
+# dash-renderer==0.7.4
+# dash-html-components==0.7.0
+# dash-core-components==0.12.0
