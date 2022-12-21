@@ -110,7 +110,7 @@ app.layout = html.Div(children=[
     )
     ], style={'padding': '20px'})
 
-cred = credentials.Certificate('./src/keys/twitter-streaming-adminsdk.json')
+cred = credentials.Certificate('D:\VSCode\\2022-2023\Sesmeter-1\BDA_Data_Streaming_Real_Time\Tweet-Streaming\src\keys\\twitter-streaming-adminsdk.json')
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
     'databaseURL': "https://twitter-streaming-fc403-default-rtdb.firebaseio.com/"
@@ -228,7 +228,7 @@ def update_graph_live(n):
                                     'title':'Tweets In Last 3 Mins',
                                     'annotations':[
                                         dict(
-                                            text='{0:.1f}K'.format((pos_num+neg_num+neu_num)),
+                                            text='{0:.1f}'.format((pos_num+neg_num+neu_num)),
                                             font=dict(
                                                 size=40
                                             ),
