@@ -1,6 +1,12 @@
+import sys
+sys.path.append(".")
+
+import base64
 import datetime
 import itertools
+import json
 import math
+import os
 import re
 
 import dash
@@ -72,7 +78,7 @@ app.layout = html.Div(children=[
                     ),
                     html.A(
                         'GitHub',
-                        href='https://github.com/PJMAM'
+                        href='https://github.com/trancongtuanmanh'
                     )                    
                 ]
             ),
@@ -95,8 +101,8 @@ app.layout = html.Div(children=[
                     'Author:'
                     ),
                     html.A(
-                        'PJ Mam',
-                        href='https://www.linkedin.com/in/phuoc-nguyen-b662891bb/'
+                        'nguyenmanh',
+                        href='https://www.linkedin.com/'
                     )                    
                 ]
             )                                                          
@@ -105,12 +111,12 @@ app.layout = html.Div(children=[
 
     dcc.Interval(
         id='interval-component-slow',
-        interval=1*10000, # in milliseconds
+        interval=1*1000, # in milliseconds
         n_intervals=0
     )
     ], style={'padding': '20px'})
 
-cred = credentials.Certificate('D:\VSCode\\2022-2023\Sesmeter-1\BDA_Data_Streaming_Real_Time\Tweet-Streaming\src\keys\\twitter-streaming-adminsdk.json')
+cred = credentials.Certificate('./src/keys/twitter-streaming-adminsdk.json')
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
     'databaseURL': "https://twitter-streaming-fc403-default-rtdb.firebaseio.com/"
@@ -122,14 +128,14 @@ firebase_admin.initialize_app(cred, {
 def update_graph_live(n):
 
   
-    ref =db.reference('object')
+    ref =db.reference('Twitter Streaming')
     docs=ref.get()
     data=[]
     for key,val in docs.items():
         data.append(val)
         
-    # df=pd.json_normalize(data)
     df=pd.DataFrame(data)
+
     # Convert UTC into PDT
     df['created_at'] = pd.to_datetime(df['created_at'])
 
@@ -228,9 +234,9 @@ def update_graph_live(n):
                                     'title':'Tweets In Last 3 Mins',
                                     'annotations':[
                                         dict(
-                                            text='{0:.1f}'.format((pos_num+neg_num+neu_num)),
+                                            text='{0:.1f}K'.format((pos_num+neg_num+neu_num)),
                                             font=dict(
-                                                size=40
+                                                size=30
                                             ),
                                             showarrow=False
                                         )
@@ -247,19 +253,19 @@ def update_graph_live(n):
                     children=[
                         html.Div(
                             children=[
-                                html.P('Tweets/10 Mins Changed By',
+                                html.P('Tweets per 10 Mins Changed By',
                                     style={
-                                        'fontSize': 25
+                                        'fontSize': 17
                                     }
                                 ),
                                 html.P('{0:.2f}%'.format(percent) if percent <= 0 else '+{0:.2f}%'.format(percent),
                                     style={
-                                        'fontSize': 40
+                                        'fontSize': 32
                                     }
                                 )
                             ], 
                             style={
-                                'width': '60%',
+                                'width': '20%', 
                                 'display': 'block'
                             }
 
@@ -268,7 +274,7 @@ def update_graph_live(n):
                             children=[
                                 html.P('Potential Impressions Today',
                                     style={
-                                        'fontSize': 25
+                                        'fontSize': 17
                                     }
                                 ),
                                 html.P('{0:.1f}K'.format(daily_impressions/10) \
@@ -276,12 +282,12 @@ def update_graph_live(n):
                                             ('{0:.1f}M'.format(daily_impressions/100) if daily_impressions < 100 \
                                             else '{0:.1f}B'.format(daily_impressions/100)),
                                     style={
-                                        'fontSize': 40
+                                        'fontSize': 32
                                     }
                                 )
                             ], 
                             style={
-                                'width': '30%',
+                                'width': '20%', 
                                 'display': 'inline-block'
                             }
                         ),
@@ -289,18 +295,19 @@ def update_graph_live(n):
                             children=[
                                 html.P('Tweets Posted Today',
                                     style={
-                                        'fontSize': 25
+                                        'fontSize': 17
                                     }
                                 ),
                                 html.P('{0:.1f}'.format(daily_tweets_num),
                                     style={
-                                        'fontSize': 40
+                                        'fontSize': 32
                                     }
                                 )
                             ], 
                             style={
                                 'width': '20%', 
-                                'display': 'inline-block'
+                                'display': 'inline-block',
+                                'margin': '0 0 0 150px'
                             }
                         ),
 
@@ -314,8 +321,7 @@ def update_graph_live(n):
                             ], 
                             style={
                                 'width': '40%', 
-                                'display': 'inline-block',
-                                'align' : 'center'
+                                'display': 'inline-block'
                             }
                         ),
 
@@ -330,13 +336,13 @@ def update_graph_live(n):
 def update_graph_bottom_live(n):
 
    
-    ref =db.reference('object')
+    ref =db.reference('Twitter Streaming')
     docs=ref.get()
     data=[]
     for key,val in docs.items():
         data.append(val)
         
-    df=pd.json_normalize(data)
+    df=pd.DataFrame(data)
 
     # Convert UTC into PDT
     df['created_at'] = pd.to_datetime(df['created_at'])
@@ -450,6 +456,7 @@ def update_graph_bottom_live(n):
         
     return children
     
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8050)
